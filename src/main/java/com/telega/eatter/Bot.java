@@ -3,32 +3,41 @@ package com.telega.eatter;
 import com.telega.eatter.Utils.BotUtils;
 import com.telega.eatter.configuration.GameStatusInfo;
 import com.telega.eatter.service.GameService;
+import com.telega.processors.MessageProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.Objects;
+
+
 @Component
 public class Bot extends TelegramLongPollingBot {
 
 
-    @Autowired
-    GameService gameService;
+    private final GameStatusInfo gameStatus;
 
-    @Autowired
-    BotUtils botUtils;
+    private final ApplicationContext context;
 
-    @Autowired
-    GameStatusInfo gameStatus;
+    private MessageProcessor messageProcessor;
 
     @Value("${bot.token}")
     private String botToken;
 
     @Value("${bot.name}")
     private String botName;
+
+    @Autowired
+    public Bot(ApplicationContext context, GameStatusInfo gameStatus) {
+        this.context = context;
+        this.gameStatus = gameStatus;
+    }
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -37,9 +46,7 @@ public class Bot extends TelegramLongPollingBot {
         SendMessage sendMessage = new SendMessage(chatId, "Да проще тебе ебало набить");
 
         if (gameStatus.isActiveGame() && gameStatus.getGameOwnerId().equals(userId) && !gameStatus.isGameIsReady()) {
-            sendMessage.setText(botUtils.processActiveGameByOwner(update));
-            sendMsg(sendMessage);
-            return;
+            messageProcessor = getProcessorByName(MessageProcessor.ACTIVE_GAME_BY_OWNER_PROCESSOR_BEAN);
         }
 
         String message = update.getMessage().getText();
@@ -51,25 +58,20 @@ public class Bot extends TelegramLongPollingBot {
         System.out.println(message);
 
         if (message.equals(BotUtils.START_GAME_MESSAGE)) {
-            sendMessage.setText(botUtils.processStartGame(update));
-            sendMsg(sendMessage);
-            return;
+            messageProcessor = getProcessorByName(MessageProcessor.START_GAME_PROCESSOR_BEAN);
         }
 
         if (message.startsWith(BotUtils.ANSWER_MESSAGE)) {
-            sendMessage.setText(botUtils.processAnswers(update));
-            sendMsg(sendMessage);
-            return;
+            messageProcessor = getProcessorByName(MessageProcessor.ANSWER_PROCESSOR_BEAN);
         }
 
         if (message.startsWith(BotUtils.FINISH_GAME_MESSAGE)) {
-            sendMessage.setText(botUtils.processFinish(update));
-            sendMsg(sendMessage);
-            return;
+            messageProcessor = getProcessorByName(MessageProcessor.FINISH_PROCESSOR_BEAN);
 
         }
 
-        sendMessage.setText(botUtils.processRandomMessages(update));
+        messageProcessor = getProcessorByName(MessageProcessor.RANDOME_MESSAGES_PROCESSOR_BEAN);
+        sendMessage.setText(messageProcessor.process(update));
         sendMsg(sendMessage);
     }
 
@@ -89,5 +91,9 @@ public class Bot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+    }
+
+    private MessageProcessor getProcessorByName(String name) {
+        return BeanFactoryAnnotationUtils.qualifiedBeanOfType(Objects.requireNonNull(context.getAutowireCapableBeanFactory()), MessageProcessor.class, name);
     }
 }
