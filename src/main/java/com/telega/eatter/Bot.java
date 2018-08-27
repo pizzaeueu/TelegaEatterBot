@@ -50,33 +50,6 @@ public class Bot extends TelegramLongPollingBot {
 
         System.out.println(message);
 
-        if (message.equals("/Женя")) {
-            sendMessage.setText("Киса");
-            sendMsg(sendMessage);
-            return;
-        } else if (message.equals("/Артем")) {
-            sendMessage.setText("Крест бля");
-            sendMsg(sendMessage);
-            return;
-        } else if (message.equals("/ГруппаКрови")) {
-            sendMessage.setText("На руковееее");
-            sendMsg(sendMessage);
-            return;
-        } else if (message.equals("/ООО")) {
-            sendMessage.setText("ПОШЛИ ВЫ ВСЕ НАХУЙ");
-            sendMsg(sendMessage);
-            return;
-        } else if (message.equals(BotUtils.HELP_MESSAGE)) {
-            String rules = "";
-            rules += "Сообщение " + BotUtils.START_GAME_MESSAGE + " - начинает игру \n";
-            rules += "Что бы внести свой ответ напиши - " + BotUtils.ANSWER_MESSAGE + " и цену(не забудь пробел) пример - " + BotUtils.ANSWER_MESSAGE + " 34.4 \n";
-            rules += "Когда ведущий желает закончить игру - пишет " + BotUtils.FINISH_GAME_MESSAGE + " и цену, пример - " + BotUtils.FINISH_GAME_MESSAGE + " 25.5 \n";
-            sendMessage.setText(rules);
-            sendMsg(sendMessage);
-            return;
-
-        }
-
         if (message.equals(BotUtils.START_GAME_MESSAGE)) {
             sendMessage.setText(botUtils.processStartGame(update));
             sendMsg(sendMessage);
@@ -96,6 +69,7 @@ public class Bot extends TelegramLongPollingBot {
 
         }
 
+        sendMessage.setText(botUtils.processRandomMessages(update));
         sendMsg(sendMessage);
     }
 
