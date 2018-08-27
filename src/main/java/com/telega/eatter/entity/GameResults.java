@@ -1,24 +1,25 @@
 package com.telega.eatter.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.GeneratorType;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name="GameResult")
 @Data
 public class GameResults {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id",unique=true, nullable = false)
     private Long GameResultId;
 
     @Column
-    private Long subscriberId;
+    private String subscriberId;
 
     @Column
-    private Long answer;
+    private Double answer;
 
     @Column
     private Long GameId;
