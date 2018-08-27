@@ -45,32 +45,24 @@ public class Bot extends TelegramLongPollingBot {
         Long chatId = update.getMessage().getChatId();
         SendMessage sendMessage = new SendMessage(chatId, "Да проще тебе ебало набить");
 
-        if (gameStatus.isActiveGame() && gameStatus.getGameOwnerId().equals(userId) && !gameStatus.isGameIsReady()) {
-            messageProcessor = getProcessorByName(MessageProcessor.ACTIVE_GAME_BY_OWNER_PROCESSOR_BEAN);
-        }
+
 
         String message = update.getMessage().getText();
-        if (message == null) {
-            return;
-        }
-
 
         System.out.println(message);
 
-        if (message.equals(BotUtils.START_GAME_MESSAGE)) {
+        if (gameStatus.isActiveGame() && gameStatus.getGameOwnerId().equals(userId) && !gameStatus.isGameIsReady()) {
+            messageProcessor = getProcessorByName(MessageProcessor.ACTIVE_GAME_BY_OWNER_PROCESSOR_BEAN);
+        } else if (message != null && message.equals(BotUtils.START_GAME_MESSAGE)) {
             messageProcessor = getProcessorByName(MessageProcessor.START_GAME_PROCESSOR_BEAN);
-        }
-
-        if (message.startsWith(BotUtils.ANSWER_MESSAGE)) {
+        } else if (message != null && message.startsWith(BotUtils.ANSWER_MESSAGE)) {
             messageProcessor = getProcessorByName(MessageProcessor.ANSWER_PROCESSOR_BEAN);
-        }
-
-        if (message.startsWith(BotUtils.FINISH_GAME_MESSAGE)) {
+        } else if (message != null && message.startsWith(BotUtils.FINISH_GAME_MESSAGE)) {
             messageProcessor = getProcessorByName(MessageProcessor.FINISH_PROCESSOR_BEAN);
-
+        } else {
+            messageProcessor = getProcessorByName(MessageProcessor.RANDOME_MESSAGES_PROCESSOR_BEAN);
         }
 
-        messageProcessor = getProcessorByName(MessageProcessor.RANDOME_MESSAGES_PROCESSOR_BEAN);
         sendMessage.setText(messageProcessor.process(update));
         sendMsg(sendMessage);
     }
