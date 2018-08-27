@@ -2,7 +2,6 @@ package com.telega.eatter;
 
 import com.telega.eatter.Utils.BotUtils;
 import com.telega.eatter.configuration.GameStatusInfo;
-import com.telega.eatter.service.GameService;
 import com.telega.processors.MessageProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
@@ -60,7 +59,7 @@ public class Bot extends TelegramLongPollingBot {
         } else if (message != null && message.startsWith(BotUtils.FINISH_GAME_MESSAGE)) {
             messageProcessor = getProcessorByName(MessageProcessor.FINISH_PROCESSOR_BEAN);
         } else {
-            messageProcessor = getProcessorByName(MessageProcessor.RANDOME_MESSAGES_PROCESSOR_BEAN);
+            messageProcessor = getProcessorByName(MessageProcessor.RANDOM_MESSAGES_PROCESSOR_BEAN);
         }
 
         sendMessage.setText(messageProcessor.process(update));

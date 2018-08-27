@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class BeanConfiguration {
 
-    @Bean(name = MessageProcessor.RANDOME_MESSAGES_PROCESSOR_BEAN)
+    @Bean(name = MessageProcessor.RANDOM_MESSAGES_PROCESSOR_BEAN)
     public MessageProcessor getRandomMessageProcessor() {
         return new RandomMessagesProcessor();
     }
