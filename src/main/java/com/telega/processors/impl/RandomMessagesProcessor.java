@@ -26,6 +26,11 @@ public class RandomMessagesProcessor implements MessageProcessor {
 
         messages.put(BotUtils.HELP_MESSAGE, rules);
 
+        final StringBuffer allWords = new StringBuffer();
+        messages.entrySet().stream().map(Map.Entry::getKey).forEach( word -> allWords.append(word).append("\n"));
+
+        messages.put("/чтоможешь", allWords.toString());
+
     }
 
     @Override
