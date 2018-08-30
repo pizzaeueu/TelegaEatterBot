@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendSticker;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -47,6 +48,18 @@ public class Bot extends TelegramLongPollingBot {
 
 
         String message = update.getMessage().getText();
+
+        if (message != null && message.equals("/Александр")) {
+            SendSticker sendSticker = new SendSticker();
+            sendSticker.setChatId(chatId);
+            sendSticker.setSticker("CAADAgADGgADD5fhFwl8DekyyR_UAg");
+            try {
+                execute(sendSticker);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
 
         System.out.println(message);
 
